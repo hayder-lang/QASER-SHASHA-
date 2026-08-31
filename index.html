@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>قصر شيشة للاميرات — سجل المواعيد</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#B24A6B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="قصر شيشة">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FBF3EC;
+    --card:#FFFFFF;
+    --rose:#B24A6B;
+    --rose-dark:#7E3049;
+    --rose-light:#F4DCE3;
+    --gold:#C69A3A;
+    --gold-light:#F3E6C6;
+    --ink:#3B2430;
+    --ink-soft:#7A5D68;
+    --line:#EAD6DD;
+    --danger:#B23A3A;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 500px at 15% -10%, var(--gold-light) 0%, transparent 60%),
+      radial-gradient(1000px 500px at 110% 0%, var(--rose-light) 0%, transparent 55%),
+      var(--cream);
+    min-height:100vh;
+    font-family:'Cairo', sans-serif;
+    color:var(--ink);
+    padding:24px 16px 60px;
+  }
+  .wrap{max-width:960px;margin:0 auto;}
+
+  header{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    padding:22px 26px;
+    background:linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
+    border-radius:20px;
+    color:#fff;
+    box-shadow:0 8px 24px rgba(126,48,73,0.25);
+    margin-bottom:22px;
+    position:relative;
+    overflow:hidden;
+  }
+  header::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(220px 220px at 95% 120%, rgba(255,255,255,0.12), transparent 70%);
+  }
+  .crown-icon{
+    flex-shrink:0;
+    width:52px;height:52px;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(255,255,255,0.16);
+    border:1.5px solid rgba(255,255,255,0.4);
+    border-radius:14px;
+    position:relative;
+    z-index:1;
+  }
+  .crown-icon svg{width:30px;height:30px;}
+  .titles{position:relative;z-index:1;}
+  h1{
+    font-family:'Aref Ruqaa', serif;
+    font-size:28px;
+    margin:0 0 4px;
+    font-weight:700;
+    letter-spacing:0.5px;
+  }
+  header p{
+    margin:0;
+    font-size:14px;
+    color:rgba(255,255,255,0.85);
+  }
+
+  .panel{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:20px;
+    box-shadow:0 4px 18px rgba(126,48,73,0.06);
+    margin-bottom:20px;
+  }
+  .panel h2{
+    font-family:'Aref Ruqaa', serif;
+    font-size:20px;
+    margin:0 0 16px;
+    color:var(--rose-dark);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .panel h2 .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--gold);
+    display:inline-block;
+  }
+
+  .form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
+    gap:14px;
+  }
+  .field label{
+    display:block;
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+    font-weight:600;
+  }
+  .field input[type=text],
+  .field input[type=time],
+  .field select{
+    width:100%;
+    padding:10px 12px;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    font-family:'Cairo', sans-serif;
+    font-size:14px;
+    background:#fff;
+    color:var(--ink);
+    outline:none;
+    transition:border-color .15s;
+  }
+  .field input:focus,
+  .field select:focus{
+    border-color:var(--rose);
+  }
+  .field input.hidden-field{display:none;}
+
+  .form-actions{
+    margin-top:16px;
+    display:flex;
+    justify-content:flex-end;
+  }
+  .btn-add{
+    background:var(--rose);
+    color:#fff;
+    border:none;
+    padding:11px 26px;
+    border-radius:10px;
+    font-family:'Cairo', sans-serif;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    transition:background .15s;
+  }
+  .btn-add:hover{background:var(--rose-dark);}
+  .error-msg{
+    color:var(--danger);
+    font-size:13px;
+    margin-top:8px;
+    display:none;
+  }
+
+  .table-wrap{overflow-x:auto;}
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:680px;
+  }
+  thead th{
+    text-align:right;
+    font-size:13px;
+    color:var(--rose-dark);
+    background:var(--rose-light);
+    padding:12px 10px;
+    font-weight:700;
+    white-space:nowrap;
+  }
+  thead th:first-child{border-radius:10px 0 0 0;}
+  thead th:last-child{border-radius:0 10px 0 0;}
+  tbody td{
+    padding:12px 10px;
+    font-size:13.5px;
+    border-bottom:1px solid var(--line);
+    color:var(--ink);
+    white-space:nowrap;
+  }
+  tbody tr:hover{background:#FFF9F5;}
+  tbody tr:last-child td{border-bottom:none;}
+  .badge{
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:600;
+    background:var(--gold-light);
+    color:#7A5A0F;
+  }
+  .del-btn{
+    border:none;
+    background:transparent;
+    color:var(--danger);
+    cursor:pointer;
+    font-size:16px;
+    padding:4px 8px;
+    border-radius:6px;
+  }
+  .del-btn:hover{background:#FBE7E7;}
+  .empty-state{
+    text-align:center;
+    padding:36px 16px;
+    color:var(--ink-soft);
+  }
+  .empty-state svg{width:44px;height:44px;margin-bottom:10px;opacity:0.5;}
+  .empty-state p{margin:0;font-size:14px;}
+  .count-tag{
+    font-size:12px;
+    color:var(--ink-soft);
+    font-weight:600;
+  }
+  .panel-head-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:16px;
+  }
+  .panel-head-row h2{margin:0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="crown-icon">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 18h18l-1.2-7.5-4.3 3.2L12 6l-3.5 7.7-4.3-3.2L3 18z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+        <circle cx="3" cy="8.5" r="1.4" fill="white"/>
+        <circle cx="12" cy="4.5" r="1.4" fill="white"/>
+        <circle cx="21" cy="8.5" r="1.4" fill="white"/>
+      </svg>
+    </div>
+    <div class="titles">
+      <h1>قصر شيشة للاميرات</h1>
+      <p>سجل مواعيد الزبونات</p>
+    </div>
+  </header>
+
+  <div class="panel">
+    <div class="panel-head-row">
+      <h2><span class="dot"></span>إضافة زبونة</h2>
+    </div>
+    <div class="form-grid">
+      <div class="field">
+        <label for="f-name">اسم الزبونة</label>
+        <input type="text" id="f-name" placeholder="اكتب اسم الزبونة">
+      </div>
+
+      <div class="field">
+        <label for="f-status">حالة الزبونة</label>
+        <select id="f-status">
+          <option value="عروس">عروس</option>
+          <option value="مرافقة">مرافقة</option>
+          <option value="صبغ شعر">صبغ شعر</option>
+          <option value="اظافر">اظافر</option>
+          <option value="بدي كير">بدي كير</option>
+          <option value="__other__">أخرى...</option>
+        </select>
+        <input type="text" id="f-status-other" class="hidden-field" placeholder="اكتب الحالة" style="margin-top:8px;">
+      </div>
+
+      <div class="field">
+        <label for="f-staff">المسؤولة</label>
+        <select id="f-staff">
+          <option value="شيشة">شيشة</option>
+          <option value="__other__">أخرى...</option>
+        </select>
+        <input type="text" id="f-staff-other" class="hidden-field" placeholder="اكتب اسم المسؤولة" style="margin-top:8px;">
+      </div>
+
+      <div class="field">
+        <label for="f-start">وقت الدخول</label>
+        <input type="time" id="f-start" min="04:00" max="22:00" value="10:00">
+      </div>
+
+      <div class="field">
+        <label for="f-end">انتهاء الجلسة</label>
+        <input type="time" id="f-end" min="04:00" max="22:00" value="11:00">
+      </div>
+    </div>
+    <p class="error-msg" id="err">الرجاء تعبئة اسم الزبونة قبل الإضافة.</p>
+    <div class="form-actions">
+      <button class="btn-add" id="add-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        إضافة إلى السجل
+      </button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head-row">
+      <h2><span class="dot"></span>السجل</h2>
+      <span class="count-tag" id="count-tag">0 زبونة</span>
+    </div>
+    <div class="table-wrap">
+      <table id="log-table">
+        <thead>
+          <tr>
+            <th>التسلسل</th>
+            <th>اسم الزبونة</th>
+            <th>حالة الزبونة</th>
+            <th>المسؤولة</th>
+            <th>وقت الدخول</th>
+            <th>انتهاء الجلسة</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="log-body"></tbody>
+      </table>
+      <div class="empty-state" id="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#B24A6B" stroke-width="1.5"><path d="M3 18h18l-1.2-7.5-4.3 3.2L12 6l-3.5 7.7-4.3-3.2L3 18z" stroke-linejoin="round"/></svg>
+        <p>لا توجد مواعيد بعد. أضيفي أول زبونة من الأعلى.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const STORAGE_KEY = 'appointments-log';
+let entries = [];
+
+function to12h(t){
+  if(!t) return '';
+  const [h,m] = t.split(':').map(Number);
+  const period = h < 12 ? 'ص' : 'م';
+  let hh = h % 12;
+  if(hh === 0) hh = 12;
+  return hh + ':' + String(m).padStart(2,'0') + ' ' + period;
+}
+
+async function loadEntries(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    entries = raw ? JSON.parse(raw) : [];
+  }catch(e){
+    entries = [];
+  }
+  render();
+}
+
+async function saveEntries(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  }catch(e){
+    console.error('storage error', e);
+  }
+}
+
+function render(){
+  const body = document.getElementById('log-body');
+  const empty = document.getElementById('empty-state');
+  const table = document.getElementById('log-table');
+  const countTag = document.getElementById('count-tag');
+  countTag.textContent = entries.length + ' زبونة';
+
+  if(entries.length === 0){
+    table.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+  table.style.display = '';
+  empty.style.display = 'none';
+
+  body.innerHTML = '';
+  entries.forEach((e, idx) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${idx + 1}</td>
+      <td>${e.name}</td>
+      <td><span class="badge">${e.status}</span></td>
+      <td>${e.staff}</td>
+      <td>${to12h(e.start)}</td>
+      <td>${to12h(e.end)}</td>
+      <td><button class="del-btn" data-id="${e.id}" aria-label="حذف">✕</button></td>
+    `;
+    body.appendChild(tr);
+  });
+
+  body.querySelectorAll('.del-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-id');
+      entries = entries.filter(e => e.id !== id);
+      await saveEntries();
+      render();
+    });
+  });
+}
+
+document.getElementById('f-status').addEventListener('change', (e) => {
+  const other = document.getElementById('f-status-other');
+  other.classList.toggle('hidden-field', e.target.value !== '__other__');
+  if(e.target.value === '__other__') other.focus();
+});
+
+document.getElementById('f-staff').addEventListener('change', (e) => {
+  const other = document.getElementById('f-staff-other');
+  other.classList.toggle('hidden-field', e.target.value !== '__other__');
+  if(e.target.value === '__other__') other.focus();
+});
+
+document.getElementById('add-btn').addEventListener('click', async () => {
+  const nameEl = document.getElementById('f-name');
+  const name = nameEl.value.trim();
+  const err = document.getElementById('err');
+
+  if(!name){
+    err.style.display = 'block';
+    nameEl.focus();
+    return;
+  }
+  err.style.display = 'none';
+
+  const statusSel = document.getElementById('f-status');
+  const statusOther = document.getElementById('f-status-other');
+  const status = statusSel.value === '__other__' ? (statusOther.value.trim() || 'أخرى') : statusSel.value;
+
+  const staffSel = document.getElementById('f-staff');
+  const staffOther = document.getElementById('f-staff-other');
+  const staff = staffSel.value === '__other__' ? (staffOther.value.trim() || 'أخرى') : staffSel.value;
+
+  const start = document.getElementById('f-start').value;
+  const end = document.getElementById('f-end').value;
+
+  entries.push({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    name, status, staff, start, end
+  });
+
+  await saveEntries();
+  render();
+
+  nameEl.value = '';
+  statusSel.value = 'عروس';
+  statusOther.value = '';
+  statusOther.classList.add('hidden-field');
+  staffSel.value = 'شيشة';
+  staffOther.value = '';
+  staffOther.classList.add('hidden-field');
+  nameEl.focus();
+});
+
+document.getElementById('f-name').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){
+    document.getElementById('add-btn').click();
+  }
+});
+
+loadEntries();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').catch((e) => console.error('SW failed', e));
+  });
+}
+</script>
+</body>
+</html>
